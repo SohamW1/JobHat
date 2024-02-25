@@ -52,7 +52,7 @@
             transform: rotate(180deg);
         }
 
-        .drop-area {
+        /* .drop-area {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,6 +63,25 @@
             background-color: #f9f9f9;
             cursor: pointer;
             margin-bottom: 20px;
+        } */
+        
+        .drop-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center; /* Center the text if there is any */
+            /* Add any other styles such as border, background, etc. */
+        }
+
+        /* Add this if you want to also center the contents of your form */
+        #resumeForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .upload-button {
@@ -211,12 +230,12 @@
                     <div class="loader"></div>
                 </div> -->
                 <div id="resumeDropArea" class="drop-area">
-                    <h3>Drop your resume here</h3>
+                    <!-- <h3>Drop your resume here</h3> -->
                     <img id="hatImage" class="hat" src="https://harrypottershop.com/cdn/shop/products/1219098_800x.png?v=1646911986"
                         alt="Drop your resume into the hat" style="width: 100px; height: auto;">
                     <form id="resumeForm" class="grid" action="http://34.70.186.125:5000/upload" method="POST" enctype="multipart/form-data" style="position: relative;">
                         <input type="file" id="resumeUpload" name="resume" hidden accept=".pdf" onchange="uploadResume()">
-                        <label for="resumeUpload" class="upload-button">Or click to upload</label>
+                        <label for="resumeUpload" class="upload-button">Click to upload</label>
                     </form>
                 </div>
             </section>
@@ -254,146 +273,146 @@
             }
         }
 
-//         function uploadResume() {
-//             // Get the hat image element
-//             var hatImage = document.getElementById("hatImage");
+        function uploadResume() {
+            // Get the hat image element
+            var hatImage = document.getElementById("hatImage");
 
-//             // Add the CSS class to trigger the animation
-//             hatImage.classList.add("upload-animation");
+            // Add the CSS class to trigger the animation
+            hatImage.classList.add("upload-animation");
             
-//             // Check URL
-//             var internshipsButton = document.getElementById("internshipsButton");
-//             var url = "https://github.com/SimplifyJobs/New-Grad-Positions"; // Default URL
-//             if (internshipsButton.classList.contains("active")) {
-//                 url = "https://github.com/SimplifyJobs/Summer2024-Internships";
+            // Check URL
+            var internshipsButton = document.getElementById("internshipsButton");
+            var url = "https://github.com/SimplifyJobs/New-Grad-Positions"; // Default URL
+            if (internshipsButton.classList.contains("active")) {
+                url = "https://github.com/SimplifyJobs/Summer2024-Internships";
+            }
+
+            // Call changeUrl with the determined URL
+            changeUrl(url);
+        }
+
+        function changeUrl(url) {
+            fetch('/change-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({url: url})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('URL changed successfully:', data);
+                // After the URL has been successfully changed, submit the form
+                document.getElementById('resumeForm').submit();
+            })
+            .catch(error => {
+                console.error('There was a problem changing the URL:', error);
+            });
+        }
+
+//         document.addEventListener('DOMContentLoaded', function() {
+//             var dropArea = document.getElementById('resumeDropArea');
+
+//             // Prevent default drag behaviors
+//             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+//                 dropArea.addEventListener(eventName, preventDefaults, false);
+//             });
+
+//             function preventDefaults(e) {
+//                 e.preventDefault();
+//                 e.stopPropagation();
 //             }
 
-//             // Call changeUrl with the determined URL
-//             changeUrl(url);
-//         }
-
-//         function changeUrl(url) {
-//             fetch('/change-url', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify({url: url})
-//             })
-//             .then(response => {
-//                 if (!response.ok) {
-//                     throw new Error('Network response was not ok');
-//                 }
-//                 return response.json();
-//             })
-//             .then(data => {
-//                 console.log('URL changed successfully:', data);
-//                 // After the URL has been successfully changed, submit the form
-//                 document.getElementById('resumeForm').submit();
-//             })
-//             .catch(error => {
-//                 console.error('There was a problem changing the URL:', error);
+//             // Highlight drop area when item is dragged over it
+//             ['dragenter', 'dragover'].forEach(eventName => {
+//                 dropArea.addEventListener(eventName, highlight, false);
 //             });
-//         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            var dropArea = document.getElementById('resumeDropArea');
 
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
+//             ['dragleave', 'drop'].forEach(eventName => {
+//                 dropArea.addEventListener(eventName, unhighlight, false);
+//             });
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
+//             function highlight(e) {
+//                 dropArea.classList.add('highlight');
+//             }
 
-            // Highlight drop area when item is dragged over it
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, highlight, false);
-            });
+//             function unhighlight(e) {
+//                 dropArea.classList.remove('highlight');
+//             }
 
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, unhighlight, false);
-            });
+//             // Handle dropped files
+//             dropArea.addEventListener('drop', handleDrop, false);
 
-            function highlight(e) {
-                dropArea.classList.add('highlight');
-            }
+//             function handleDrop(e) {
+//                 var dt = e.dataTransfer;
+//                 var files = dt.files;
 
-            function unhighlight(e) {
-                dropArea.classList.remove('highlight');
-            }
+//                 uploadResume(files);
+//             }
 
-            // Handle dropped files
-            dropArea.addEventListener('drop', handleDrop, false);
+//             function uploadResume(files) {
+//                 var hatImage = document.getElementById("hatImage");
+//                 hatImage.classList.add("upload-animation");
 
-            function handleDrop(e) {
-                var dt = e.dataTransfer;
-                var files = dt.files;
+//                 var internshipsButton = document.getElementById("internshipsButton");
+//                 var url = internshipsButton.classList.contains("active") ? 
+//                           "https://github.com/SimplifyJobs/Summer2024-Internships" : 
+//                           "https://github.com/SimplifyJobs/New-Grad-Positions";
 
-                uploadResume(files);
-            }
+//                 changeUrl(url, files);
+//             }
 
-            function uploadResume(files) {
-                var hatImage = document.getElementById("hatImage");
-                hatImage.classList.add("upload-animation");
+//             function changeUrl(url, files) {
+//                 fetch('/change-url', {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json'
+//                     },
+//                     body: JSON.stringify({ url: url })
+//                 })
+//                 .then(response => {
+//                     if (!response.ok) {
+//                         throw new Error('Network response was not ok');
+//                     }
+//                     return response.json();
+//                 })
+//                 .then(data => {
+//                     console.log('URL changed successfully:', data);
+//                     submitForm(files);
+//                 })
+//                 .catch(error => {
+//                     console.error('There was a problem changing the URL:', error);
+//                 });
+//             }
 
-                var internshipsButton = document.getElementById("internshipsButton");
-                var url = internshipsButton.classList.contains("active") ? 
-                          "https://github.com/SimplifyJobs/Summer2024-Internships" : 
-                          "https://github.com/SimplifyJobs/New-Grad-Positions";
+//             function submitForm(files) {
+//                 var formData = new FormData();
+//                 formData.append('resume', files[0]); // Assuming single file upload
 
-                changeUrl(url, files);
-            }
-
-            function changeUrl(url, files) {
-                fetch('/change-url', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url: url })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('URL changed successfully:', data);
-                    submitForm(files);
-                })
-                .catch(error => {
-                    console.error('There was a problem changing the URL:', error);
-                });
-            }
-
-            function submitForm(files) {
-                var formData = new FormData();
-                formData.append('resume', files[0]); // Assuming single file upload
-
-                fetch('/upload', { // Replace with your upload endpoint
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Server response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Upload successful:', data);
-                    // Perform any success actions, like redirecting to another page
-                })
-                .catch(error => {
-                    console.error('Upload failed:', error);
-                });
-            }
-        });
+//                 fetch('/upload', { // Replace with your upload endpoint
+//                     method: 'POST',
+//                     body: formData
+//                 })
+//                 .then(response => {
+//                     if (!response.ok) {
+//                         throw new Error('Server response was not ok');
+//                     }
+//                     return response.json();
+//                 })
+//                 .then(data => {
+//                     console.log('Upload successful:', data);
+//                     // Perform any success actions, like redirecting to another page
+//                 })
+//                 .catch(error => {
+//                     console.error('Upload failed:', error);
+//                 });
+//             }
+//         });
         
 //         // Function to show the loading overlay
 //         function showLoading() {
