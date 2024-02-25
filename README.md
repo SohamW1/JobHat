@@ -19,8 +19,8 @@ To start your magical journey with JobHat, follow this simple step:
 Upload Your Resume: Just upload your resume, and let the Sorting Hat do its magic to match you with the perfect job opportunities.
 
 ## Technologies Used:
-Python
-HTML/CSS
+Python,<br>
+HTML/CSS,<br>
 JavaScript
 
 
