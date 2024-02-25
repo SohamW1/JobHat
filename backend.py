@@ -3,7 +3,15 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import PyPDF2
+import pandas as pd
 
+data = {
+    'Company': [],
+    'Role': [],
+    'Link': []
+}
+
+df = pd.DataFrame(data)  # Define df as a global DataFrame
 
 cs_keywords = keywords = [
     "Python", "Java", "JavaScript", "C++", "C#", "R", "SQL", "Scala", "Perl", "Ruby", "Go", "Swift", "Kotlin", 
@@ -62,33 +70,43 @@ def get_scores(url, pdf_file):
     links = get_urls(url)
     extracted_skills = extract_skills_from_pdf(pdf_file)
     keyword_match_score = {}
+    scores = []
     for link in links:
         skills = extract_skills_from_url(link)
         n = len(skills)
-        if skills == []:
-            # print("\tin empty if")
-            # keyword_match_score[link] = 0
-            continue
-        score = 0
-        for line in skills:
-            for skill in line:
-                if skill in extracted_skills:
-                    score+=1
-                    break
-        if score / n > 0.60:
-            keyword_match_score[link] = score/n
+        if n == 0:
+            scores.append(0)  # If no skills are extracted, assign score 0
+        else:
+            score = 0
+            for line in skills:
+                for skill in line:
+                    if skill in extracted_skills:
+                        score += 1
+                        break
+            if score / n > 0.60:
+                scores.append(score / n)  # Append the normalized score
+            else:
+                scores.append(0)  # If score is below threshold, assign score 0
 
-    # sort descending
-    keyword_match_score = dict(sorted(keyword_match_score.items(), key=lambda item: item[1], reverse=True))
+    # Add the 'Score' column to the DataFrame
+    df['Score'] = scores
+    sorted_df = df[df['Score'] > 0].sort_values(by='Score', ascending=False)
+    
+    def format_score(score):
+        return str(round(100 * score, 2)) + "%"
 
-    for k, v in keyword_match_score.items():
-        keyword_match_score[k] = str(round(100 * v, 2)) + "%"
+    # Apply the function to the 'Score' column
+    sorted_df['Score'] = sorted_df['Score'].apply(format_score)
 
-    return keyword_match_score
+    return sorted_df
 
 
 def get_urls(url):
     # URL of the job posting
+    if url == "https://github.com/SimplifyJobs/Summer2024-Internships":
+        skiprows = 10
+    else:
+        skiprows = 8
 
     # Send a GET request to the page
     response = requests.get(url)
@@ -97,20 +115,28 @@ def get_urls(url):
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # Find the element containing the job requirements
-    # (You will need to inspect the HTML structure of the page to do this correctly)
-    job_requirements = soup.find_all('a', href=re.compile(r'myworkdayjobs'))
-    pattern = r'href="([^"]*)"'
-    # Find all matches
-    for i in job_requirements:
-        matches = re.findall(pattern, str(i))
-        job_links.append(matches[0])
-    job_requirements = soup.find_all('a', href=re.compile(r'boards.greenhouse.io'))
-    pattern = r'href="([^"]*)"'
-    # Find all matches
-    for i in job_requirements:
-        matches = re.findall(pattern, str(i))
-        job_links.append(matches[0])
-    return job_links
+    job_rows = soup.find_all('tr')[skiprows:]
+
+    for job in job_rows:
+        # Check if job closed
+        if job.find('td').find('a') == None:
+            continue
+        # Extract company name
+        company = job.find('td').find('a').text
+
+        # Extract role
+        role = job.find_all('td')[1].text
+
+        # Extract links. Assuming you are interested in the 'Application/Link' column which could have multiple links
+        links_td = job.find_all('td')[3]
+
+        link = [a['href'] for a in links_td.find_all('a', href=True)][0].split("?")[0]
+
+        if re.search(r'myworkdayjobs', link) or re.search(r'boards.greenhouse.io', link):
+            # Append data to DataFrame
+            df.loc[len(df)] = [company, role, link]
+
+    return df["Link"]
 
 
 def extract_skills_from_pdf(pdf_path):
@@ -142,7 +168,6 @@ def extract_skills_from_pdf(pdf_path):
 
     # Find the requirements section based on the presence of certain keywords
     # Extract skills from requirements text
-    # print(text)
     skills = extract_skills(text)
     # Add extracted skills to the list
     extracted_skills.extend(skills)
