@@ -18,6 +18,30 @@
                 transform: translateY(-50px); /* Adjust the value as needed */
             }
         }
+        
+        /* Ensure that the list items are aligned horizontally and the image (logo) is centered */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Adjust as needed */
+        }
+
+        /* Logo image styling */
+        .logo {
+            height: auto; /* Maintain aspect ratio */
+            width: auto; /* Adjust width automatically */
+            max-height: 50px; /* Adjust max-height as needed to fit your header */
+            max-width: 100%; /* Ensure it doesn't exceed the width of its container */
+        }
+
+        /* Responsive design - Adjust the size of the logo on smaller screens */
+        @media (max-width: 768px) {
+            .logo {
+                max-height: 40px; /* Smaller max-height for smaller screens */
+            }
+        }
 
         /* Apply animation to the hat image */
         .upload-animation {
@@ -149,11 +173,11 @@
 <body>
     <nav class="container-fluid">
         <ul>
+            <li><img src="./static/jobhatfinal.png" class="logo"></li>
             <li><strong>JobHat</strong></li>
         </ul>
         <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
         </ul>
     </nav>
     <h1>JobHat</h1>
@@ -217,24 +241,6 @@
     </section>
 
     <script>
-        function uploadResume() {
-            // Get the hat image element
-            var hatImage = document.getElementById("hatImage");
-
-            // Add the CSS class to trigger the animation
-            hatImage.classList.add("upload-animation");
-            
-            // Check URL
-            var internshipsButton = document.getElementById("internshipsButton");
-            var url = "https://github.com/SimplifyJobs/New-Grad-Positions"; // Default URL
-            if (internshipsButton.classList.contains("active")) {
-                url = "https://github.com/SimplifyJobs/Summer2024-Internships";
-            }
-
-            // Call changeUrl with the determined URL
-            changeUrl(url);
-        }
-
         function toggleContent(option) {
             var internshipsButton = document.getElementById("internshipsButton");
             var jobsButton = document.getElementById("jobsButton");
@@ -248,30 +254,146 @@
             }
         }
 
-        function changeUrl(url) {
-            fetch('/change-url', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({url: url})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('URL changed successfully:', data);
-                // After the URL has been successfully changed, submit the form
-                document.getElementById('resumeForm').submit();
-            })
-            .catch(error => {
-                console.error('There was a problem changing the URL:', error);
-            });
-        }
+//         function uploadResume() {
+//             // Get the hat image element
+//             var hatImage = document.getElementById("hatImage");
 
+//             // Add the CSS class to trigger the animation
+//             hatImage.classList.add("upload-animation");
+            
+//             // Check URL
+//             var internshipsButton = document.getElementById("internshipsButton");
+//             var url = "https://github.com/SimplifyJobs/New-Grad-Positions"; // Default URL
+//             if (internshipsButton.classList.contains("active")) {
+//                 url = "https://github.com/SimplifyJobs/Summer2024-Internships";
+//             }
+
+//             // Call changeUrl with the determined URL
+//             changeUrl(url);
+//         }
+
+//         function changeUrl(url) {
+//             fetch('/change-url', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: JSON.stringify({url: url})
+//             })
+//             .then(response => {
+//                 if (!response.ok) {
+//                     throw new Error('Network response was not ok');
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 console.log('URL changed successfully:', data);
+//                 // After the URL has been successfully changed, submit the form
+//                 document.getElementById('resumeForm').submit();
+//             })
+//             .catch(error => {
+//                 console.error('There was a problem changing the URL:', error);
+//             });
+//         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var dropArea = document.getElementById('resumeDropArea');
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropArea.classList.add('highlight');
+            }
+
+            function unhighlight(e) {
+                dropArea.classList.remove('highlight');
+            }
+
+            // Handle dropped files
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                var dt = e.dataTransfer;
+                var files = dt.files;
+
+                uploadResume(files);
+            }
+
+            function uploadResume(files) {
+                var hatImage = document.getElementById("hatImage");
+                hatImage.classList.add("upload-animation");
+
+                var internshipsButton = document.getElementById("internshipsButton");
+                var url = internshipsButton.classList.contains("active") ? 
+                          "https://github.com/SimplifyJobs/Summer2024-Internships" : 
+                          "https://github.com/SimplifyJobs/New-Grad-Positions";
+
+                changeUrl(url, files);
+            }
+
+            function changeUrl(url, files) {
+                fetch('/change-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('URL changed successfully:', data);
+                    submitForm(files);
+                })
+                .catch(error => {
+                    console.error('There was a problem changing the URL:', error);
+                });
+            }
+
+            function submitForm(files) {
+                var formData = new FormData();
+                formData.append('resume', files[0]); // Assuming single file upload
+
+                fetch('/upload', { // Replace with your upload endpoint
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Upload successful:', data);
+                    // Perform any success actions, like redirecting to another page
+                })
+                .catch(error => {
+                    console.error('Upload failed:', error);
+                });
+            }
+        });
         
 //         // Function to show the loading overlay
 //         function showLoading() {

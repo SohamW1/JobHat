@@ -50,5 +50,10 @@ def change_url():
     app.config['url'] = data.get('url')  # Update the URL in application configuration
     return jsonify({'message': 'URL changed successfully'})
 
+# Route to serve static files
+@app.route('/static/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
