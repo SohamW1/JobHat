@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>JobHat</title>
+    <style>
+        h1 {text-align: center;}
+
+        /* Define animation keyframes */
+        @keyframes uploadAnimation {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-50px); /* Adjust the value as needed */
+            }
+        }
+
+        /* Apply animation to the hat image */
+        .upload-animation {
+            animation: uploadAnimation 0.5s linear;
+        }
+        
+        .hat {
+            transform: rotate(180deg);
+        }
+
+        .drop-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed #007bff;
+            border-radius: 20px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .upload-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .drop-area:hover {
+            transform: scale(1.05);
+            /* Slightly enlarge the drop area */
+            transition: transform 0.2s ease-in-out;
+            /* Smooth transition */
+        }
+
+        .drop-area img {
+            transition: transform 0.2s ease-in-out;
+            /* Smooth transition for the hat image as well */
+        }
+
+        .drop-area:hover img {
+            transform: rotate(180deg);
+            transform: translateY(-5px);
+            /* Slightly raise the hat image */
+        }
+
+        .drop-area.highlight {
+            border-color: #4CAF50;
+            /* Green, or choose any color you prefer */
+            background-color: #f0f0f0;
+            /* Light grey, to indicate active drag area */
+        }
+
+        .upload-button {
+            background-color: #f9f9f9;
+            /* Adjust this color to match your background */
+            color: #007bff;
+            /* Text color - consider using your theme's primary color for contrast */
+            padding: 10px 20px;
+            border: 2px solid #007bff;
+            /* Optional: add a border that matches your theme */
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-button:hover {
+            background-color: #e9e9e9;
+            /* Slightly darker on hover for feedback */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>JobHat</strong></li>
+        </ul>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+    <h1>JobHat</h1>
+    <main class="container">
+        <div class="grid">
+            <section>
+                <hgroup>
+                    <h2>Find Your Perfect Job Match</h2>
+                    <h3>Just upload your resume and let us do the rest</h3>
+                </hgroup>
+                <p>Welcome to Resume Matcher! Our program analyzes your PDF format resume to find job listings that
+                    match your skills and experience. No more endless job hunting; let us bring the opportunities to
+                    you.</p>
+                <figure>
+                    <img src="https://source.unsplash.com/featured/?office" alt="Office">
+                    <figcaption><a href="https://unsplash.com" target="_blank">Image courtesy of Unsplash</a>
+                    </figcaption>
+                </figure>
+                <h3>How It Works</h3>
+                <p>Upload your resume in PDF format. Our backend code reviews your resume's content, including your
+                    skills and experience, to match you with job listings from various platforms. You'll receive a list
+                    of URLs to job postings that fit your profile.</p>
+                <h3>Get Started Now</h3>
+                <p>Ready to find your next job? Click the button below to upload your resume and start the matching
+                    process.</p>
+                <div id="resumeDropArea" class="drop-area">
+                    <h3>Drop your resume here</h3>
+                    <img id="hatImage" class="hat" src="https://harrypottershop.com/cdn/shop/products/1219098_800x.png?v=1646911986"
+                        alt="Drop your resume into the hat" style="width: 100px; height: auto;">
+                    <form id="resumeForm" class="grid" action="http://34.70.186.125:5000/upload" method="POST"
+                        enctype="multipart/form-data">
+                        <input type="file" id="resumeUpload" name="resume" hidden accept=".pdf" onchange="uploadResume()">
+                        <label for="resumeUpload" class="upload-button">Or click to upload</label>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+    <section aria-label="Subscribe example">
+        <div class="container">
+            <article>
+                <hgroup>
+                    <h2>Stay Updated</h2>
+                    <h3>Subscribe to get the latest job matches</h3>
+                </hgroup>
+                <form class="grid">
+                    <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Your Name"
+                        required="">
+                    <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Your Email"
+                        required="">
+                    <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+                </form>
+            </article>
+        </div>
+    </section>
+
+    <script>
+        function uploadResume() {
+            // Get the hat image element
+            var hatImage = document.getElementById("hatImage");
+
+            // Add the CSS class to trigger the animation
+            hatImage.classList.add("upload-animation");
+
+            // After a delay, remove the CSS class to reset the animation
+            setTimeout(function() {
+                hatImage.classList.remove("upload-animation");
+
+                // After another delay, submit the form
+                // setTimeout(function() {
+                document.getElementById('resumeForm').submit();
+                // }, 3000); // 3000 milliseconds = 3 seconds
+            }, 500); // Adjust the time to match the animation duration
+        }
+    </script>
+</body>
+
+</html>

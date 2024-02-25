@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <title>Job Matches</title>
+    <style>
+        h1 {text-align: center;}
+    </style>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>JobHat</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+    <h1>Your Job Matches</h1>
+    <ul>
+        {% for job, score in jobs.items() %}
+            <li><a href="{{ job }}">{{ job }}</a> - {{ score }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
