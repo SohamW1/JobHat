@@ -138,8 +138,13 @@
                         enctype="multipart/form-data">
                         <input type="file" id="resumeUpload" name="resume" hidden accept=".pdf" onchange="uploadResume()">
                         <label for="resumeUpload" class="upload-button">Or click to upload</label>
+                        <label class="switch" style="position: absolute; top: 0; right: 0;">
+                            <input type="checkbox" id="jobTypeSwitch" name="toggle" onclick="toggleJobType()">
+                            <span class="slider round"></span>
+                        </label>
                     </form>
                 </div>
+                <p style="text-align:center" id="jobTypeText">Currently searching for Jobs</p>
             </section>
         </div>
     </main>
@@ -173,11 +178,19 @@
             setTimeout(function() {
                 hatImage.classList.remove("upload-animation");
 
-                // After another delay, submit the form
-                // setTimeout(function() {
                 document.getElementById('resumeForm').submit();
-                // }, 3000); // 3000 milliseconds = 3 seconds
             }, 500); // Adjust the time to match the animation duration
+        }
+
+        function toggleJobType() {
+            var jobTypeText = document.getElementById("jobTypeText");
+            var jobTypeSwitch = document.getElementById("jobTypeSwitch");
+
+            if (jobTypeSwitch.checked) {
+                jobTypeText.innerText = "Currently searching for Internships";
+            } else {
+                jobTypeText.innerText = "Currently searching for Jobs";
+            }
         }
     </script>
 </body>

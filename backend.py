@@ -76,10 +76,13 @@ def get_scores(url, pdf_file):
                     score+=1
                     break
         if score / n > 0.60:
-            keyword_match_score[link] = str(round(100 * score/n, 2)) + "%"
+            keyword_match_score[link] = score/n
 
     # sort descending
-    keyword_match_score = dict(sorted(keyword_match_score.items(), key=lambda item: item[1]))
+    keyword_match_score = dict(sorted(keyword_match_score.items(), key=lambda item: item[1], reverse=True))
+
+    for k, v in keyword_match_score.items():
+        keyword_match_score[k] = str(round(100 * v, 2)) + "%"
 
     return keyword_match_score
 
@@ -133,8 +136,10 @@ def extract_skills_from_pdf(pdf_path):
     # Open the PDF file
     pdfFileObj = open(pdf_path, 'rb')
     pdfReader = PyPDF2.PdfReader(pdfFileObj)
-    pageObj = pdfReader.pages[0]
-    text=(pageObj.extract_text()).replace("\n", " ")
+    text = ""
+    for pageObj in pdfReader:
+        text += (pageObj.extract_text()).replace("\n", " ")
+
     # Find the requirements section based on the presence of certain keywords
     # Extract skills from requirements text
     # print(text)
@@ -189,11 +194,13 @@ def extract_skills_from_url(url):
     extracted_skills = []
     if requirements_section:
         # Extract text from requirements section
-        requirements_text = requirements_section.find_next("ul").get_text()
-        # Extract skills from requirements text
-        skills = extract_skills(requirements_text)
-        for skill in skills:
-            extracted_skills.append(skill)
+        next_req = requirements_section.find_next("ul")
+        if next_req != None:
+            requirements_text = next_req.get_text()
+            # Extract skills from requirements text
+            skills = extract_skills(requirements_text)
+            for skill in skills:
+                extracted_skills.append(skill)
     # else:
         # print("Requirements section not found.")
 
