@@ -14,7 +14,8 @@ Sorting and Matching: JobHat employs enchanting sorting techniques to match user
 **Enchanting Interface**: Immerse yourself in a magical user experience that makes job searching a delightful journey.
 
 ## Getting Started:
-To start your magical journey with JobHat, follow these simple steps:
+To start your magical journey with JobHat, follow this simple step:
+<br>
 Upload Your Resume: Just upload your resume, and let the Sorting Hat do its magic to match you with the perfect job opportunities.
 
 ## Technologies Used:
