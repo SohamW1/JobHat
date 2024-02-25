@@ -1,2 +1,2 @@
-# TalentTrove
-Mad Hack 2024 project
+# JobHat
+MadData 2024 hackathon project
