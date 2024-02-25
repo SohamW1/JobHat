@@ -129,12 +129,16 @@ def get_urls(url):
 
         # Extract links. Assuming you are interested in the 'Application/Link' column which could have multiple links
         links_td = job.find_all('td')[3]
-
-        link = [a['href'] for a in links_td.find_all('a', href=True)][0].split("?")[0]
+        # link = [a['href'] for a in links_td.find_all('a', href=True)][0].split("?")[0]
+        try:
+            link = [a['href'] for a in links_td.find_all('a', href=True)][0].split("?")[0]
+        except IndexError:
+            # locked posting
+            continue
 
         if re.search(r'myworkdayjobs', link) or re.search(r'boards.greenhouse.io', link):
             # Append data to DataFrame
-            df.loc[len(df)] = [company, role, link]
+                df.loc[len(df)] = [company, role, link]
 
     return df["Link"]
 
