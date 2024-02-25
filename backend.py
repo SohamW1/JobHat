@@ -194,8 +194,8 @@ def extract_skills_from_url(url):
         skills = extract_skills(requirements_text)
         for skill in skills:
             extracted_skills.append(skill)
-    else:
-        print("Requirements section not found.")
+    # else:
+        # print("Requirements section not found.")
 
     # Extract computer science-related skills
     cs_skills = extract_cs_skills(extracted_skills)

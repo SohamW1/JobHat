@@ -4,13 +4,10 @@ from werkzeug.utils import secure_filename
 from backend import get_scores
 import json
 
-app = Flask("Job Hat")
+app = Flask("JobHat")
 
 @app.route('/')
 def home():
-    # with open("index.html") as f:
-    #     html = f.read()
-    # return html
     return render_template("index.html")
 
 @app.route('/upload', methods=['POST'])
@@ -25,7 +22,7 @@ def upload_file():
     if file:
         # Process your file here (e.g., save it somewhere or analyze it)
         filename = secure_filename(file.filename)
-        filename = os.path.join('resumes', filename)
+        filename = os.path.join(filename)
         file.save(filename)
         
         url = "https://github.com/SimplifyJobs/New-Grad-Positions?tab=readme-ov-file"
