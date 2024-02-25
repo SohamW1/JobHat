@@ -12,6 +12,36 @@
             text-align: center;
         }
 
+        /* Ensure that the list items are aligned horizontally and the image (logo) is centered */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* Adjust as needed */
+        }
+
+        /* Logo image styling */
+        .logo {
+            height: auto;
+            /* Maintain aspect ratio */
+            width: auto;
+            /* Adjust width automatically */
+            max-height: 50px;
+            /* Adjust max-height as needed to fit your header */
+            max-width: 100%;
+            /* Ensure it doesn't exceed the width of its container */
+        }
+
+        /* Responsive design - Adjust the size of the logo on smaller screens */
+        @media (max-width: 768px) {
+            .logo {
+                max-height: 40px;
+                /* Smaller max-height for smaller screens */
+            }
+        }
+
         .table-container {
             width: 80%;
             margin: 2rem auto;

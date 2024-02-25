@@ -11,8 +11,6 @@ data = {
     'Link': []
 }
 
-df = pd.DataFrame(data)  # Define df as a global DataFrame
-
 cs_keywords = keywords = [
     "Python", "Java", "JavaScript", "C++", "C#", "R", "SQL", "Scala", "Perl", "Ruby", "Go", "Swift", "Kotlin", 
     "HTML/CSS", "PHP", "MATLAB", "Julia", "HTML", "CSS", "React", "Angular", "Vue.js", "Node.js", "Express.js",
@@ -67,7 +65,8 @@ cs_keywords = keywords = [
 
 
 def get_scores(url, pdf_file):
-    links = get_urls(url)
+    df = get_urls(url)
+    links = df["Link"]
     extracted_skills = extract_skills_from_pdf(pdf_file)
     keyword_match_score = {}
     scores = []
@@ -102,6 +101,7 @@ def get_scores(url, pdf_file):
 
 
 def get_urls(url):
+    df = pd.DataFrame(data)  # Define df as a global DataFrame
     # URL of the job posting
     if url == "https://github.com/SimplifyJobs/Summer2024-Internships":
         skiprows = 10
@@ -145,7 +145,7 @@ def get_urls(url):
                 print(len(df))
                 continue
 
-    return df["Link"]
+    return df
 
 
 def extract_skills_from_pdf(pdf_path):
