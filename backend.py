@@ -138,7 +138,12 @@ def get_urls(url):
 
         if re.search(r'myworkdayjobs', link) or re.search(r'boards.greenhouse.io', link):
             # Append data to DataFrame
+            try:
                 df.loc[len(df)] = [company, role, link]
+            except ValueError:
+                print([company, role, link])
+                print(len(df))
+                continue
 
     return df["Link"]
 
