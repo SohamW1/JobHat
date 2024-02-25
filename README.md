@@ -7,7 +7,7 @@ JobHat is a magical platform that was created to help job hunters identify and m
 ## Features:
 Sorting and Matching: JobHat employs enchanting sorting techniques to match users with suitable job opportunities based on their skills and talents.
 
-**Talent Discovery**: Users can explore a wide range of career options and discover hidden talents they never knew they possessed.
+**Talent Discovery**: Users can explore a wide range of career options.
 
 **Magical Insights**: Receive personalized insights and recommendations tailored to your unique abilities and aspirations.
 
