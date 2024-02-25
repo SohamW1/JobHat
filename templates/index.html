@@ -94,6 +94,55 @@
             background-color: #e9e9e9;
             /* Slightly darker on hover for feedback */
         }
+        
+        .segmented-button {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .segmented-button button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            border: none;
+        }
+
+        .segmented-button button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            display: none; /* Hide by default */
+            z-index: 9999; /* Ensure it's on top */
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite; /* Rotate animation */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -60px; /* Half of the loader's height */
+            margin-left: -60px; /* Half of the loader's width */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -130,21 +179,22 @@
                 <h3>Get Started Now</h3>
                 <p>Ready to find your next job? Click the button below to upload your resume and start the matching
                     process.</p>
+                <div class="segmented-button">
+                    <button id="internshipsButton" class="active" onclick="toggleContent('internships')">Internships</button>
+                    <button id="jobsButton" onclick="toggleContent('jobs')">Jobs</button>
+                </div>
+                <!-- <div id="loadingOverlay" class="overlay">
+                    <div class="loader"></div>
+                </div> -->
                 <div id="resumeDropArea" class="drop-area">
                     <h3>Drop your resume here</h3>
                     <img id="hatImage" class="hat" src="https://harrypottershop.com/cdn/shop/products/1219098_800x.png?v=1646911986"
                         alt="Drop your resume into the hat" style="width: 100px; height: auto;">
-                    <form id="resumeForm" class="grid" action="http://34.70.186.125:5000/upload" method="POST"
-                        enctype="multipart/form-data">
+                    <form id="resumeForm" class="grid" action="http://127.0.0.1:8000/upload" method="POST" enctype="multipart/form-data" style="position: relative;">
                         <input type="file" id="resumeUpload" name="resume" hidden accept=".pdf" onchange="uploadResume()">
                         <label for="resumeUpload" class="upload-button">Or click to upload</label>
-                        <label class="switch" style="position: absolute; top: 0; right: 0;">
-                            <input type="checkbox" id="jobTypeSwitch" name="toggle" onclick="toggleJobType()">
-                            <span class="slider round"></span>
-                        </label>
                     </form>
                 </div>
-                <p style="text-align:center" id="jobTypeText">Currently searching for Jobs</p>
             </section>
         </div>
     </main>
@@ -173,25 +223,104 @@
 
             // Add the CSS class to trigger the animation
             hatImage.classList.add("upload-animation");
+            
+            // Check URL
+            var internshipsButton = document.getElementById("internshipsButton");
+            var url = "https://github.com/SimplifyJobs/New-Grad-Positions"; // Default URL
+            if (internshipsButton.classList.contains("active")) {
+                url = "https://github.com/SimplifyJobs/Summer2024-Internships";
+            }
 
-            // After a delay, remove the CSS class to reset the animation
-            setTimeout(function() {
-                hatImage.classList.remove("upload-animation");
-
-                document.getElementById('resumeForm').submit();
-            }, 500); // Adjust the time to match the animation duration
+            // Call changeUrl with the determined URL
+            changeUrl(url);
         }
 
-        function toggleJobType() {
-            var jobTypeText = document.getElementById("jobTypeText");
-            var jobTypeSwitch = document.getElementById("jobTypeSwitch");
+        function toggleContent(option) {
+            var internshipsButton = document.getElementById("internshipsButton");
+            var jobsButton = document.getElementById("jobsButton");
 
-            if (jobTypeSwitch.checked) {
-                jobTypeText.innerText = "Currently searching for Internships";
+            if (option === 'internships') {
+                internshipsButton.classList.add("active");
+                jobsButton.classList.remove("active");
             } else {
-                jobTypeText.innerText = "Currently searching for Jobs";
+                internshipsButton.classList.remove("active");
+                jobsButton.classList.add("active");
             }
         }
+
+        function changeUrl(url) {
+            fetch('/change-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({url: url})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('URL changed successfully:', data);
+                // After the URL has been successfully changed, submit the form
+                document.getElementById('resumeForm').submit();
+            })
+            .catch(error => {
+                console.error('There was a problem changing the URL:', error);
+            });
+        }
+
+        
+//         // Function to show the loading overlay
+//         function showLoading() {
+//             document.getElementById("loadingOverlay").style.display = "block";
+//         }
+    
+//         // Function to hide the loading overlay
+//         function hideLoading() {
+//             document.getElementById("loadingOverlay").style.display = "none";
+//         }
+
+//         document.addEventListener('DOMContentLoaded', function() {
+//             document.getElementById('resumeForm').addEventListener('submit', function(e) {
+//                 // Prevent the default form submission
+//                 e.preventDefault();
+
+//                 // Show the loading overlay
+//                 showLoading();
+
+//                 // Create a FormData object, passing the form as a parameter to gather the form data
+//                 var formData = new FormData(this);
+
+//                 // Use fetch to submit the form data to the server asynchronously
+//                 fetch(this.action, {
+//                     method: 'POST',
+//                     body: formData,
+//                 })
+//                 .then(response => {
+//                     if (!response.ok) {
+//                         throw new Error('Network response was not ok');
+//                     }
+//                     return response.json(); // Assuming the server responds with JSON
+//                 })
+//                 .then(data => {
+//                     console.log('Success:', data);
+//                     // Hide the loading overlay
+//                     hideLoading();
+                    
+//                     if(data.success && data.redirectUrl) {
+//                         window.location.href = data.redirectUrl; // Redirect based on the server's response
+//                     }
+//                 })
+//                 .catch(error => {
+//                     console.error('There was a problem with your fetch operation:', error);
+//                     // Hide the loading overlay
+//                     hideLoading();
+//                 });
+//             });
+//         });
     </script>
 </body>
 

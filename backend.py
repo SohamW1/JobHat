@@ -137,7 +137,7 @@ def extract_skills_from_pdf(pdf_path):
     pdfFileObj = open(pdf_path, 'rb')
     pdfReader = PyPDF2.PdfReader(pdfFileObj)
     text = ""
-    for pageObj in pdfReader:
+    for pageObj in pdfReader.pages:
         text += (pageObj.extract_text()).replace("\n", " ")
 
     # Find the requirements section based on the presence of certain keywords

@@ -1,10 +1,11 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, jsonify, session
 import os
 from werkzeug.utils import secure_filename
 from backend import get_scores
 import json
 
-app = Flask("Job Hat")
+app = Flask("JobHat")
+app.config['url'] = "https://github.com/SimplifyJobs/Summer2024-Internships"  # Default URL
 
 @app.route('/')
 def home():
@@ -23,16 +24,8 @@ def upload_file():
         filename = os.path.join(filename)
         file.save(filename)
 
-        # Get the value of the toggle checkbox
-        toggle = request.form.get('toggle')
-        # print(toggle)
-        # print(type(toggle))
-        if toggle == "on":
-            url = "https://github.com/SimplifyJobs/Summer2024-Internships"
-        else:
-            url = "https://github.com/SimplifyJobs/New-Grad-Positions"
         # Process the uploaded file to get job matches
-        job_matches = get_scores(url, filename)
+        job_matches = get_scores(app.config['url'], filename)
 
         # Delete resume as we believe in Data Privacy
         os.remove(filename)
@@ -44,9 +37,14 @@ def upload_file():
 def job_matches():
     # If passing job matches directly, adjust to receive them as a parameter or from session
     jobs = request.args.get('job_matches').replace("'", '"').replace('&amp;', '&')
-    print(jobs)
     job_matches_dict = json.loads(jobs) if jobs else {}
     return render_template('job_matches.html', jobs=job_matches_dict)
+
+@app.route('/change-url', methods=['POST'])
+def change_url():
+    data = request.json
+    app.config['url'] = data.get('url')  # Update the URL in application configuration
+    return jsonify({'message': 'URL changed successfully'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
